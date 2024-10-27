@@ -8,7 +8,6 @@ import { TestsModule } from './tests/tests.module';
 import { QuestionsModule } from './questions/questions.module';
 import { AnswersOptionsModule } from './answers_options/answers_options.module';
 import { DatabaseModule } from './db/modules/database.modules';
-import { QuestionsCategoriesModule } from './questions_categories/questions_categories.module';
 
 @Module({
   imports: [
@@ -19,7 +18,6 @@ import { QuestionsCategoriesModule } from './questions_categories/questions_cate
     TestsModule,
     QuestionsModule,
     AnswersOptionsModule,
-    QuestionsCategoriesModule
   ],
   controllers: [],
   providers: [

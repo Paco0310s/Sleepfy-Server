@@ -9,35 +9,34 @@ import { Public } from 'src/decorators/public.decorator';
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
 
-  @Post()
-  @Public()
+  // @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
-  @Get()
+  // @Get()
   findAll() {
     return this.usersService.findAll();
   }
 
-  @Get(':id')
+  // @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);
   }
 
-  @Patch(':id')
+  // @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(+id, updateUserDto);
   }
 
-  @Delete(':id')
+  // @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);
   }
 
-  @HttpCode(HttpStatus.OK)
-  @Post('login')
-  @Public()
+  // @HttpCode(HttpStatus.OK)
+  // @Post('login')
+  // @Public()
   login(@Body() loginUserDto: LoginUserDto) {
     return this.usersService.validateUser(loginUserDto.email, loginUserDto.password);
   }

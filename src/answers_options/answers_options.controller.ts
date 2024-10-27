@@ -5,29 +5,29 @@ import { UpdateAnswersOptionDto } from './dto/update-answers_option.dto';
 
 @Controller('answers-options')
 export class AnswersOptionsController {
-  constructor(private readonly answersOptionsService: AnswersOptionsService) {}
+  constructor(private readonly answersOptionsService: AnswersOptionsService) { }
 
-  @Post()
+  // @Post()
   create(@Body() createAnswersOptionDto: CreateAnswersOptionDto) {
     return this.answersOptionsService.create(createAnswersOptionDto);
   }
 
-  @Get()
+  // @Get()
   findAll() {
     return this.answersOptionsService.findAll();
   }
 
-  @Get(':id')
+  // @Get(':id')
   findOne(@Param('id') id: string) {
     return this.answersOptionsService.findOne(+id);
   }
 
-  @Patch(':id')
+  // @Patch(':id')
   update(@Param('id') id: string, @Body() updateAnswersOptionDto: UpdateAnswersOptionDto) {
     return this.answersOptionsService.update(+id, updateAnswersOptionDto);
   }
 
-  @Delete(':id')
+  // @Delete(':id')
   remove(@Param('id') id: string) {
     return this.answersOptionsService.remove(+id);
   }

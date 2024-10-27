@@ -32,7 +32,7 @@ export class AuthController {
         return this.authService.register(createUserDto);
     }
 
-    @Get('profile')
+    // @Get('profile')
     getProfile(@Request() req) {
         return req.user;
     }
