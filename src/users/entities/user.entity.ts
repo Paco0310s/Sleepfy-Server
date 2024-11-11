@@ -1,4 +1,8 @@
-import { Column, DataType, IsEmail, Model, Table, Unique, AllowNull } from "sequelize-typescript";
+import { Column, DataType, IsEmail, Model, Table, Unique, AllowNull, HasOne, HasMany } from "sequelize-typescript";
+import { CustomRoutine } from "src/custom-routine/entities/custom-routine.entity";
+import { UserAnswer } from "src/user-answers/entities/user-answer.entity";
+import { Comment } from "src/comments/entities/comment.entity";
+import { SleepSchedule } from "src/sleep-schedules/entities/sleep-schedule.entity";
 
 @Table
 export class User extends Model {
@@ -41,4 +45,17 @@ export class User extends Model {
         // },
     })
     password: string;
+
+    @HasMany(() => UserAnswer)
+    userAnswer: UserAnswer;
+
+    @HasMany(() => CustomRoutine)
+    customRoutine: CustomRoutine;
+
+    @HasMany(() => Comment)
+    comment: Comment;
+
+    @HasMany(() => SleepSchedule)
+    sleepSchedule: SleepSchedule;
+
 }

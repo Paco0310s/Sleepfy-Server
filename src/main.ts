@@ -15,13 +15,13 @@ async function bootstrap() {
     }),
   )
 
-  const config = new DocumentBuilder()
-    .setTitle('Sleepfy API')
-    .setDescription('The Sleepfy API description')
-    .setVersion('1.0')
-    .build();
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, documentFactory);
+  // const config = new DocumentBuilder()
+  //   .setTitle('Sleepfy API')
+  //   .setDescription('The Sleepfy API description')
+  //   .setVersion('1.0')
+  //   .build();
+  // const documentFactory = () => SwaggerModule.createDocument(app, config);
+  // SwaggerModule.setup('api', app, documentFactory);
 
   await app.listen(process.env.PORT ?? 3000);
 }

@@ -8,6 +8,10 @@ import { TestsModule } from './tests/tests.module';
 import { QuestionsModule } from './questions/questions.module';
 import { AnswersOptionsModule } from './answers_options/answers_options.module';
 import { DatabaseModule } from './db/modules/database.modules';
+import { UserAnswersModule } from './user-answers/user-answers.module';
+import { CustomRoutineModule } from './custom-routine/custom-routine.module';
+import { CommentsModule } from './comments/comments.module';
+import { SleepSchedulesModule } from './sleep-schedules/sleep-schedules.module';
 
 @Module({
   imports: [
@@ -18,6 +22,10 @@ import { DatabaseModule } from './db/modules/database.modules';
     TestsModule,
     QuestionsModule,
     AnswersOptionsModule,
+    UserAnswersModule,
+    CustomRoutineModule,
+    CommentsModule,
+    SleepSchedulesModule,
   ],
   controllers: [],
   providers: [

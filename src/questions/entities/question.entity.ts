@@ -1,6 +1,7 @@
-import { AllowNull, BelongsTo, Column, DataType, ForeignKey, Table, Model, HasMany } from "sequelize-typescript";
+import { AllowNull, BelongsTo, Column, DataType, ForeignKey, Table, Model, HasMany, HasOne } from "sequelize-typescript";
 import { Test } from "src/tests/entities/test.entity";
 import { AnswersOption } from '../../answers_options/entities/answers_option.entity';
+import { UserAnswer } from "src/user-answers/entities/user-answer.entity";
 
 @Table
 export class Question extends Model<Question> {  // Ahora extiende Model<Question>
@@ -25,4 +26,7 @@ export class Question extends Model<Question> {  // Ahora extiende Model<Questio
 
     @HasMany(() => AnswersOption)
     AnswersOptions: AnswersOption[];
+
+    @HasMany(() => UserAnswer)
+    userAnswer: UserAnswer;
 }

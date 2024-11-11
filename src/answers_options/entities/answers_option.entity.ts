@@ -1,5 +1,6 @@
-import { AllowNull, BelongsTo, Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript";
+import { AllowNull, BelongsTo, Column, DataType, ForeignKey, HasMany, HasOne, Model, Table } from "sequelize-typescript";
 import { Question } from "src/questions/entities/question.entity";
+import { UserAnswer } from "src/user-answers/entities/user-answer.entity";
 
 @Table
 export class AnswersOption extends Model<AnswersOption> {
@@ -31,4 +32,6 @@ export class AnswersOption extends Model<AnswersOption> {
     @BelongsTo(() => Question)
     question: Question;
 
+    @HasMany(() => UserAnswer)
+    userAnswer: UserAnswer;
 }
