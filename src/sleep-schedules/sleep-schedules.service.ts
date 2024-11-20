@@ -3,17 +3,21 @@ import { CreateSleepScheduleDto } from './dto/create-sleep-schedule.dto';
 import { UpdateSleepScheduleDto } from './dto/update-sleep-schedule.dto';
 import { SleepSchedule } from './entities/sleep-schedule.entity';
 import { Op } from 'sequelize';
+import { addDays, endOfDay, getDay, startOfDay, subDays, subHours } from 'date-fns';
 
 @Injectable()
 export class SleepSchedulesService {
   async create(createSleepScheduleDto: CreateSleepScheduleDto) {
 
     // Verificar si el usuario ya tiene un horario del mismo día
+    const endDateStart = startOfDay(createSleepScheduleDto.end);
+    const endDateEnd = endOfDay(endDateStart);
+
     const sleepScheduleExists = await SleepSchedule.findOne({
       where: {
         userId: createSleepScheduleDto.userId,
-        start: createSleepScheduleDto.start,
-      }
+        end: { [Op.gte]: endDateStart, [Op.lte]: endDateEnd },
+      },
     });
 
     if (sleepScheduleExists) {
@@ -42,20 +46,29 @@ export class SleepSchedulesService {
   }
 
   async findLastWeek(userId: number) {
+    // Obtener el día de hoy en UTC
     const today = new Date();
 
-    // const lastMonday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay() + 1);
-    // const nextSunday = new Date(today.getFullYear(), today.getMonth(), today.getDate() + (7 - today.getDay()));
+    // Ajusta la fecha a UTC-6
+    const utcMinus6 = subHours(today, 6);
 
-    const lastMonday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay() - 6);
-    // lastMonday + 6 days = nextSunday
-    const nextSunday = new Date(lastMonday.getFullYear(), lastMonday.getMonth(), lastMonday.getDate() + 7);
+    // Lunes pasado más cercano (00:00 UTC-6)
+    const dayOfWeek = getDay(utcMinus6); // Día de la semana (0 = Domingo, 1 = Lunes, ...)
+    const daysToLastMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Días hasta el lunes pasado
+    const lastMonday = startOfDay(subDays(utcMinus6, daysToLastMonday)); // Lunes a las 00:00
+
+    // Domingo siguiente más cercano (23:59 UTC-6)
+    const daysToNextSunday = dayOfWeek === 0 ? 0 : 7 - dayOfWeek; // Días hasta el domingo próximo
+    const nextSunday = endOfDay(addDays(utcMinus6, daysToNextSunday)); // Domingo a las 23:59
+
+    console.log(`lastMonday: ${lastMonday}, nextSunday: ${nextSunday}`);
 
     const sleepSchedules = await SleepSchedule.findAll({
       where: {
         userId,
         end: { [Op.gte]: lastMonday, [Op.lte]: nextSunday },
-      }
+      },
+      order: [['id', 'DESC']],
     });
 
     return { sleepSchedules };
