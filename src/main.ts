@@ -4,7 +4,15 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { cors: true });
+  const app = await NestFactory.create(AppModule);
+
+  app.enableCors({
+    origin: [
+      'https://www.sleepfy.pacosotelo.com',
+    ],
+    methods: 'GET,PUT,POST',
+    credentials: true,
+  });
 
   app.setGlobalPrefix('api');
 
