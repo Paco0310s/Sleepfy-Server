@@ -15,6 +15,8 @@ async function bootstrap() {
     }),
   )
 
+  app.enableCors();
+
   // const config = new DocumentBuilder()
   //   .setTitle('Sleepfy API')
   //   .setDescription('The Sleepfy API description')
