@@ -7,9 +7,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: [
-      'https://www.sleepfy.pacosotelo.com',
-    ],
+    origin: true,
     methods: 'GET,PUT,POST',
     credentials: true,
   });
