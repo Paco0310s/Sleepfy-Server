@@ -1,0 +1,16 @@
+services:
+  sleepfy_api:
+    build: .
+    container_name: sleepfy_api
+    restart: unless-stopped
+    ports:
+      - "${PORT}:${PORT}" 
+    env_file:
+      - .env
+    networks:
+      - red_base_de_datos
+
+networks:
+  red_base_de_datos:
+    external: true
+    name: admivida-server_admivida_net
