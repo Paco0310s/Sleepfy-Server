@@ -7,9 +7,9 @@ export class AnswersOption extends Model<AnswersOption> {
 
     @Column(
         {
-            type: DataType.STRING,
+            type: DataType.STRING(500),
             validate: {
-                len: [2, 30], // Should be between 2 and 30 characters
+                len: [1, 500], // Should allow descriptive answers
             }
         }
     )
@@ -33,5 +33,5 @@ export class AnswersOption extends Model<AnswersOption> {
     question: Question;
 
     @HasMany(() => UserAnswer)
-    userAnswer: UserAnswer;
+    userAnswer: UserAnswer[];
 }

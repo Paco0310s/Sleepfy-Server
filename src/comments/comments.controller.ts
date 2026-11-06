@@ -1,14 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { RateLimit } from 'src/common/guards/rate-limit.guard';
 
 @Controller('comments')
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) { }
 
   @Post()
-  create(@Body() createCommentDto: CreateCommentDto) {
+  @RateLimit(10, 60_000)
+  create(@Body() createCommentDto: CreateCommentDto, @Req() req: any) {
+    if (req.user?.sub) {
+      createCommentDto.userId = Number(req.user.sub);
+    }
     return this.commentsService.create(createCommentDto);
   }
 

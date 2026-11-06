@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { QuestionsService } from './questions.service';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
+import { Public } from 'src/decorators/public.decorator';
 
 @Controller('questions')
 export class QuestionsController {
@@ -32,6 +33,13 @@ export class QuestionsController {
     return this.questionsService.remove(+id);
   }
 
+  @Public()
+  @Get('latest')
+  findLatest() {
+    return this.questionsService.findLatest();
+  }
+
+  @Public()
   @Get('all/:testId')
   findAllByTestId(@Param('testId') testId: string) {
     return this.questionsService.findAllByTestId(+testId);

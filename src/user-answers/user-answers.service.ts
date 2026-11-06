@@ -27,16 +27,17 @@ export class UserAnswersService {
 
       if (!user) return null;
 
-      // Verifica si el usuario ya respondió las preguntas
-      const userAnswer = await this.userAnswersRepository.findOne({
-        where: {
-          userId: createUserAnswerDto.user_id
-        }
+      // Busca si el usuario ya tenía una rutina previa para comparar avances con la IA
+      const previousRoutine = await CustomRoutine.findOne({
+        where: { userId: createUserAnswerDto.user_id },
+        order: [['id', 'DESC']],
       });
 
-      if (userAnswer) {
-        throw new BadRequestException('Ya has respondido las preguntas');
-      }
+      // Si ya existían respuestas previas, las reemplazamos dentro de la transacción para mantener actualizados los hábitos
+      await this.userAnswersRepository.destroy({
+        where: { userId: createUserAnswerDto.user_id },
+        transaction: t,
+      });
 
       const userName = user.name;
 
@@ -57,12 +58,16 @@ export class UserAnswersService {
         }
       }
 
-      // Guarda las respuestas en la base de datos
-      const resp: UserAnswer[] = await this.userAnswersRepository.bulkCreate(userAnswers, { transaction: t });
+      // Guarda las nuevas respuestas en la base de datos
+      await this.userAnswersRepository.bulkCreate(userAnswers, { transaction: t });
 
-      const routine = await generateResponse(`Crea la rutina para el usuario ${userName} con las respuestas:\n${message}`);
+      // Genera la rutina con la IA (incorporando el contexto de su rutina anterior si existe)
+      const routine = await generateResponse(
+        `Crea la rutina para el usuario ${userName} con las respuestas actuales:\n${message}`,
+        previousRoutine ? previousRoutine.routine : null
+      );
 
-      // Guarda la rutina en la base de datos
+      // Guarda la nueva versión de rutina en el historial del usuario
       await CustomRoutine.create({
         userId: createUserAnswerDto.user_id,
         routine
@@ -73,7 +78,7 @@ export class UserAnswersService {
       return { routine };
     } catch (error) {
       await t.rollback();
-      throw error;
+      throw new BadRequestException(error.message || 'No fue posible procesar las respuestas ni generar la rutina.');
     }
   }
 

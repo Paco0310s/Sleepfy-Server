@@ -1,11 +1,22 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, ForbiddenException } from '@nestjs/common';
 import { CustomRoutineService } from './custom-routine.service';
 import { CreateCustomRoutineDto } from './dto/create-custom-routine.dto';
 import { UpdateCustomRoutineDto } from './dto/update-custom-routine.dto';
+import { ChatMessageDto } from './dto/chat-message.dto';
+import { RateLimit } from 'src/common/guards/rate-limit.guard';
 
 @Controller('custom-routine')
 export class CustomRoutineController {
   constructor(private readonly customRoutineService: CustomRoutineService) { }
+
+  @Post('chat')
+  @RateLimit(15, 60_000)
+  async chatWithAI(@Body() chatMessageDto: ChatMessageDto, @Req() req: any) {
+    if (req.user?.sub) {
+      chatMessageDto.userId = Number(req.user.sub);
+    }
+    return await this.customRoutineService.chatWithAI(chatMessageDto);
+  }
 
   // @Post()
   create(@Body() createCustomRoutineDto: CreateCustomRoutineDto) {
@@ -32,8 +43,21 @@ export class CustomRoutineController {
     return this.customRoutineService.remove(+id);
   }
 
+  @Get('user/:userId/history')
+  async getHistoryForUser(@Param('userId') userId: string, @Req() req: any) {
+    const targetId = req.user?.sub ? Number(req.user.sub) : +userId;
+    if (req.user?.sub && Number(req.user.sub) !== +userId) {
+      throw new ForbiddenException('No tienes permiso para consultar el historial de otro usuario');
+    }
+    return await this.customRoutineService.getHistoryForUser(targetId);
+  }
+
   @Get('user/:userId')
-  async getRoutineForUser(@Param('userId') userId: number) {
-    return await this.customRoutineService.getRoutineForUser(userId);
+  async getRoutineForUser(@Param('userId') userId: string, @Req() req: any) {
+    const targetId = req.user?.sub ? Number(req.user.sub) : +userId;
+    if (req.user?.sub && Number(req.user.sub) !== +userId) {
+      throw new ForbiddenException('No tienes permiso para consultar la rutina de otro usuario');
+    }
+    return await this.customRoutineService.getRoutineForUser(targetId);
   }
 }

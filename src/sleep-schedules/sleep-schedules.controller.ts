@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, ForbiddenException } from '@nestjs/common';
 import { SleepSchedulesService } from './sleep-schedules.service';
 import { CreateSleepScheduleDto } from './dto/create-sleep-schedule.dto';
 import { UpdateSleepScheduleDto } from './dto/update-sleep-schedule.dto';
@@ -8,7 +8,10 @@ export class SleepSchedulesController {
   constructor(private readonly sleepSchedulesService: SleepSchedulesService) { }
 
   @Post()
-  create(@Body() createSleepScheduleDto: CreateSleepScheduleDto) {
+  create(@Body() createSleepScheduleDto: CreateSleepScheduleDto, @Req() req: any) {
+    if (req.user?.sub) {
+      createSleepScheduleDto.userId = Number(req.user.sub);
+    }
     return this.sleepSchedulesService.create(createSleepScheduleDto);
   }
 
@@ -33,7 +36,11 @@ export class SleepSchedulesController {
   }
 
   @Get('last-week/:userId')
-  findLastWeek(@Param('userId') userId: string) {
-    return this.sleepSchedulesService.findLastWeek(+userId);
+  findLastWeek(@Param('userId') userId: string, @Req() req: any) {
+    const targetId = req.user?.sub ? Number(req.user.sub) : +userId;
+    if (req.user?.sub && Number(req.user.sub) !== +userId) {
+      throw new ForbiddenException('No tienes permiso para ver los horarios de otro usuario');
+    }
+    return this.sleepSchedulesService.findLastWeek(targetId);
   }
 }

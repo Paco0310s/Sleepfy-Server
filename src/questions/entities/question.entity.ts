@@ -7,9 +7,9 @@ import { UserAnswer } from "src/user-answers/entities/user-answer.entity";
 export class Question extends Model<Question> {  // Ahora extiende Model<Question>
     @AllowNull(false) // Not null
     @Column({
-        type: DataType.STRING,
+        type: DataType.STRING(500),
         validate: {
-            len: [2, 30], // Debe tener entre 2 y 30 caracteres
+            len: [2, 500], // Permite preguntas descriptivas
         }
     })
     question: string;
@@ -28,5 +28,5 @@ export class Question extends Model<Question> {  // Ahora extiende Model<Questio
     AnswersOptions: AnswersOption[];
 
     @HasMany(() => UserAnswer)
-    userAnswer: UserAnswer;
+    userAnswer: UserAnswer[];
 }

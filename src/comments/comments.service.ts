@@ -10,10 +10,12 @@ export class CommentsService {
     const comment = await Comment.create(createCommentDto);
 
     const commentResp = await Comment.findByPk(comment.id, {
-      include: {
-        model: User,
-        attributes: ['name', 'lastName'],
-      },
+      include: [
+        {
+          model: User,
+          attributes: ['name', 'lastName'],
+        },
+      ],
       attributes: { exclude: ['updatedAt'] },
     });
 
@@ -22,10 +24,12 @@ export class CommentsService {
 
   async findAll() {
     const comments = await Comment.findAll({
-      include: {
-        model: User,
-        attributes: ['name', 'lastName'],
-      },
+      include: [
+        {
+          model: User,
+          attributes: ['name', 'lastName'],
+        },
+      ],
       attributes: { exclude: ['updatedAt'] },
     });
 

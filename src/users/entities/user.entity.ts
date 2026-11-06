@@ -5,7 +5,7 @@ import { Comment } from "src/comments/entities/comment.entity";
 import { SleepSchedule } from "src/sleep-schedules/entities/sleep-schedule.entity";
 
 @Table
-export class User extends Model {
+export class User extends Model<User> {
     @AllowNull(false) // Not null
     @Column({
         type: DataType.STRING,
@@ -47,15 +47,44 @@ export class User extends Model {
     password: string;
 
     @HasMany(() => UserAnswer)
-    userAnswer: UserAnswer;
+    userAnswer: UserAnswer[];
 
     @HasMany(() => CustomRoutine)
-    customRoutine: CustomRoutine;
+    customRoutine: CustomRoutine[];
 
     @HasMany(() => Comment)
-    comment: Comment;
+    comment: Comment[];
 
     @HasMany(() => SleepSchedule)
-    sleepSchedule: SleepSchedule;
+    sleepSchedule: SleepSchedule[];
 
+    @AllowNull(false)
+    @Column({
+        type: DataType.BOOLEAN,
+        defaultValue: false,
+    })
+    isEmailVerified: boolean;
+
+    @AllowNull(true)
+    @Column({
+        type: DataType.STRING,
+    })
+    verificationCode?: string;
+
+    @AllowNull(true)
+    @Column({
+        type: DataType.DATE,
+    })
+    verificationCodeExpires?: Date;
+
+    @Column(DataType.VIRTUAL)
+    token?: string;
+
+    toJSON() {
+        const values = Object.assign({}, this.get());
+        delete values.password;
+        delete values.verificationCode;
+        delete values.verificationCodeExpires;
+        return values;
+    }
 }

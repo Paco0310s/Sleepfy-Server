@@ -2,13 +2,26 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { envs } from './config/envs';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: true,
-    methods: 'GET,PUT,POST',
+    origin: (origin, callback) => {
+      // Permitir apps móviles/escritorio (sin origin), localhost y dominios pacosotelo.com
+      if (
+        !origin ||
+        /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin) ||
+        /^https?:\/\/([a-zA-Z0-9-]+\.)?pacosotelo\.com$/.test(origin)
+      ) {
+        callback(null, true);
+      } else {
+        callback(null, true); // Fallback permisivo para despliegues preview
+      }
+    },
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type,Accept,Authorization,X-Requested-With,Origin',
     credentials: true,
   });
 
@@ -21,14 +34,17 @@ async function bootstrap() {
     }),
   )
 
-  // const config = new DocumentBuilder()
-  //   .setTitle('Sleepfy API')
-  //   .setDescription('The Sleepfy API description')
-  //   .setVersion('1.0')
-  //   .build();
-  // const documentFactory = () => SwaggerModule.createDocument(app, config);
-  // SwaggerModule.setup('api', app, documentFactory);
+  const config = new DocumentBuilder()
+    .setTitle('Sleepfy API')
+    .setDescription('API REST de Sleepfy para evaluación de sueño, rutinas con IA, horarios y comunidad')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api/docs', app, document, {
+    customSiteTitle: 'Sleepfy API Documentation',
+  });
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(envs.port);
 }
 bootstrap();

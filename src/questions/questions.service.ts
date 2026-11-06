@@ -7,8 +7,13 @@ import { AnswersOption } from '../answers_options/entities/answers_option.entity
 
 @Injectable()
 export class QuestionsService {
-  async findAllByTestId(testId: number): Promise<Test> {
-    return await Test.findByPk(testId, {
+  async findLatest(): Promise<Test | null> {
+    return await Test.findOne({
+      order: [
+        ['id', 'DESC'],
+        [Question, 'id', 'ASC'],
+        [Question, AnswersOption, 'id', 'ASC'],
+      ],
       attributes: { exclude: ['createdAt', 'updatedAt'] },
       include: [
         {
@@ -23,6 +28,34 @@ export class QuestionsService {
         }
       ]
     });
+  }
+
+  async findAllByTestId(testId: number): Promise<Test | null> {
+    const test = await Test.findByPk(testId, {
+      order: [
+        [Question, 'id', 'ASC'],
+        [Question, AnswersOption, 'id', 'ASC'],
+      ],
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
+      include: [
+        {
+          model: Question,
+          attributes: { exclude: ['testId', 'createdAt', 'updatedAt'] },
+          include: [
+            {
+              model: AnswersOption,
+              attributes: { exclude: ['questionId', 'createdAt', 'updatedAt', 'isCorrect'] }
+            }
+          ]
+        }
+      ]
+    });
+
+    if (!test) {
+      return await this.findLatest();
+    }
+
+    return test;
   }
 
   create(createQuestionDto: CreateQuestionDto) {
