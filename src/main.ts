@@ -34,16 +34,16 @@ async function bootstrap() {
     }),
   )
 
-  const config = new DocumentBuilder()
-    .setTitle('Sleepfy API')
-    .setDescription('API REST de Sleepfy para evaluación de sueño, rutinas con IA, horarios y comunidad')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document, {
-    customSiteTitle: 'Sleepfy API Documentation',
-  });
+  // const config = new DocumentBuilder()
+  //   .setTitle('Sleepfy API')
+  //   .setDescription('API REST de Sleepfy para evaluación de sueño, rutinas con IA, horarios y comunidad')
+  //   .setVersion('1.0')
+  //   .addBearerAuth()
+  //   .build();
+  // const document = SwaggerModule.createDocument(app, config);
+  // SwaggerModule.setup('api/docs', app, document, {
+  //   customSiteTitle: 'Sleepfy API Documentation',
+  // });
 
   await app.listen(envs.port);
 }

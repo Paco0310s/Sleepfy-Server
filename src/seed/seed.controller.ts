@@ -7,21 +7,21 @@ import { SeedService } from './seed.service';
 @ApiTags('Seed')
 @Controller('seed')
 export class SeedController {
-  constructor(private readonly seedService: SeedService) {}
+  constructor(private readonly seedService: SeedService) { }
 
-  @Public()
-  @RateLimit(3, 60_000)
-  @Get()
-  @ApiOperation({ summary: 'Ejecuta el seeder idempotente para poblar el Nuevo Test y sus preguntas de sueño' })
-  runSeedGet() {
-    return this.seedService.runSeed();
-  }
+  // @Public()
+  // @RateLimit(3, 60_000)
+  // @Get()
+  // @ApiOperation({ summary: 'Ejecuta el seeder idempotente para poblar el Nuevo Test y sus preguntas de sueño' })
+  // runSeedGet() {
+  //   return this.seedService.runSeed();
+  // }
 
-  @Public()
-  @RateLimit(3, 60_000)
-  @Post()
-  @ApiOperation({ summary: 'Ejecuta el seeder idempotente para poblar el Nuevo Test y sus preguntas de sueño' })
-  runSeedPost() {
-    return this.seedService.runSeed();
-  }
+  // @Public()
+  // @RateLimit(3, 60_000)
+  // @Post()
+  // @ApiOperation({ summary: 'Ejecuta el seeder idempotente para poblar el Nuevo Test y sus preguntas de sueño' })
+  // runSeedPost() {
+  //   return this.seedService.runSeed();
+  // }
 }
