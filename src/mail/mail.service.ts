@@ -14,8 +14,8 @@ export class MailService {
         port: envs.smtpPort || 587,
         secure: envs.smtpPort === 465,
         auth: {
-          user: envs.smtpUser,
-          pass: envs.smtpPass,
+          user: envs.smtpUser.trim(),
+          pass: envs.smtpPass.replace(/\s+/g, ''),
         },
       });
     } else {
@@ -25,10 +25,10 @@ export class MailService {
     }
   }
 
-  async sendVerificationEmail(email: string, name: string, code: string): Promise<void> {
+  async sendVerificationEmail(email: string, name: string, code: string): Promise<boolean> {
     this.logger.log(`[VERIFICACIÓN DE CORREO] Para: ${email} | Código: ${code}`);
 
-    if (!this.transporter) return;
+    if (!this.transporter) return false;
 
     const html = this.buildEmailTemplate({
       title: 'Verifica tu cuenta en Sleepfy 🌙',
@@ -40,20 +40,22 @@ export class MailService {
 
     try {
       await this.transporter.sendMail({
-        from: `"Sleepfy" <${envs.smtpUser}>`,
+        from: `"Sleepfy" <${envs.smtpUser.trim()}>`,
         to: email,
         subject: `${code} es tu código de verificación de Sleepfy`,
         html,
       });
+      return true;
     } catch (error) {
       this.logger.error(`Error al enviar correo de verificación a ${email}: ${error}`);
+      return false;
     }
   }
 
-  async sendPasswordResetEmail(email: string, name: string, code: string): Promise<void> {
+  async sendPasswordResetEmail(email: string, name: string, code: string): Promise<boolean> {
     this.logger.log(`[RECUPERACIÓN DE CONTRASEÑA] Para: ${email} | Código: ${code}`);
 
-    if (!this.transporter) return;
+    if (!this.transporter) return false;
 
     const html = this.buildEmailTemplate({
       title: 'Restablece tu contraseña 🔑',
@@ -65,13 +67,15 @@ export class MailService {
 
     try {
       await this.transporter.sendMail({
-        from: `"Sleepfy" <${envs.smtpUser}>`,
+        from: `"Sleepfy" <${envs.smtpUser.trim()}>`,
         to: email,
         subject: `${code} - Código para restablecer tu contraseña en Sleepfy`,
         html,
       });
+      return true;
     } catch (error) {
       this.logger.error(`Error al enviar correo de recuperación a ${email}: ${error}`);
+      return false;
     }
   }
 

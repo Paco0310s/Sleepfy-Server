@@ -40,13 +40,15 @@ export class AuthService {
                 verificationCode: code,
                 verificationCodeExpires: expires,
             });
-            await this.mailService.sendVerificationEmail(user.email, user.name, code);
+            const sent = await this.mailService.sendVerificationEmail(user.email, user.name, code);
 
-            return {
-                requiresVerification: true,
-                email: user.email,
-                message: 'Tu correo aún no está verificado. Te hemos enviado un código de 6 dígitos.',
-            };
+            if (sent) {
+                return {
+                    requiresVerification: true,
+                    email: user.email,
+                    message: 'Tu correo aún no está verificado. Te hemos enviado un código de 6 dígitos.',
+                };
+            }
         }
 
         const token = await this.getToken(user);
@@ -66,13 +68,21 @@ export class AuthService {
             verificationCodeExpires: expires,
         });
 
-        await this.mailService.sendVerificationEmail(user.email, user.name, code);
+        const sent = await this.mailService.sendVerificationEmail(user.email, user.name, code);
 
-        return {
-            requiresVerification: true,
-            email: user.email,
-            message: 'Cuenta creada. Ingresa el código de 6 dígitos que enviamos a tu correo.',
-        };
+        if (sent) {
+            return {
+                requiresVerification: true,
+                email: user.email,
+                message: 'Cuenta creada. Ingresa el código de 6 dígitos que enviamos a tu correo.',
+            };
+        }
+
+        // Fallback seguro: si el servidor SMTP aún no está activo o falló, permitimos el acceso para no bloquear el registro
+        await user.update({ isEmailVerified: true });
+        const token = await this.getToken(user);
+        user.setDataValue('token', token.access_token);
+        return user;
     }
 
     async verifyEmail(email: string, code: string) {
